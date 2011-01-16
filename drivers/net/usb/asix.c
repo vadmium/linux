@@ -763,12 +763,14 @@ static int asix_set_eeprom(struct net_device *net,
 	0 != eeprom->len % AX_EEPROM_WORD_BYTES)
 		return -EINVAL;
 
+	// TODO: Does this need some kind of mutex lock?
 	ret = asix_write_cmd (dev, AX_CMD_WRITE_ENABLE, 0, 0, 0, NULL);
 	if (ret < 0) {
 		goto fail_enable;
 	}
 
 	for (i=0; i < eeprom->len / AX_EEPROM_WORD_BYTES; i++) {
+		// TODO: verify the endian compensation is correct on big endian arch
 		ret = asix_write_cmd(dev, AX_CMD_WRITE_EEPROM,
 			eeprom->offset / AX_EEPROM_WORD_BYTES + i,
 			le16_to_cpu(ebuf[i]), 0, NULL);
